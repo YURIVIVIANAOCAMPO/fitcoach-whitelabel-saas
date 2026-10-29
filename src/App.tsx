@@ -42,7 +42,7 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
     return localStorage.getItem('fitcoach_theme') !== 'light';
   });
