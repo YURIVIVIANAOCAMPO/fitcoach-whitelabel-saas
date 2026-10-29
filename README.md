@@ -16,7 +16,7 @@
   Flujo completo de nutrición deportiva y macros, rutinas, directorio de atletas, contratos de API simulados con base de datos XML bajo el capó y personalización en tiempo real.
 </p>
 
-[Ver Demo en Vivo](#) • [Características](#-características-del-sistema) • [Arquitectura de API & XML](#-arquitectura-simulada-api--contratos-xml) • [Instalación](#-instalación-rápida)
+[🚀 Ver Demo en Vivo en GitHub Pages](https://yurivivianaocampo.github.io/fitcoach-whitelabel-saas/) • [Características](#-características-del-sistema) • [Arquitectura de API & XML](#-arquitectura-simulada-api--contratos-xml) • [Instalación](#-instalación-rápida)
 
 </div>
 
