@@ -12,17 +12,14 @@ import {
   loadDatabaseFromStorage,
   saveDatabaseToStorage,
   serializeFitCoachToXml,
-  resetDatabaseToInitial,
-  parseFitCoachXml,
 } from './services/xmlService';
 import { Sidebar, type TabType } from './components/Sidebar';
 import { Header } from './components/Header';
-import { FitiaDiaryView } from './components/FitiaDiaryView';
+import { PTcoachDiaryView } from './components/PTcoachDiaryView';
 import { GroceryListView } from './components/GroceryListView';
 import { DashboardView } from './components/DashboardView';
 import { ClientsView } from './components/ClientsView';
 import { WorkoutsView } from './components/WorkoutsView';
-import { XmlManagerView } from './components/XmlManagerView';
 import { BottomNavBar } from './components/BottomNavBar';
 import { WhiteLabelSettingsModal } from './components/WhiteLabelSettingsModal';
 import { LoginDemoModal } from './components/LoginDemoModal';
@@ -35,13 +32,13 @@ export default function App() {
   const [brand, setBrand] = useState<BrandConfig>(initialData.brand);
   const [routines, setRoutines] = useState<WorkoutRoutine[]>(initialData.routines);
   const [clients, setClients] = useState<Client[]>(initialData.clients);
-  const [currentXml, setCurrentXml] = useState<string>(initialData.rawXml);
+  const [, setCurrentXml] = useState<string>(initialData.rawXml);
 
   const [activeClientId, setActiveClientId] = useState<string>(
     initialData.clients[0]?.id || ''
   );
 
-  const [currentTab, setCurrentTab] = useState<TabType>('fitia_diary');
+  const [currentTab, setCurrentTab] = useState<TabType>('ptcoach_diary');
   const [searchTerm, setSearchTerm] = useState('');
   const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -217,44 +214,6 @@ export default function App() {
     triggerToast(`Marca blanca actualizada: ${newBrand.brandName}`, 'success');
   };
 
-  // Import raw XML
-  const handleImportNewXml = (xmlString: string) => {
-    try {
-      const parsed = parseFitCoachXml(xmlString);
-      setBrand(parsed.brand);
-      setRoutines(parsed.routines);
-      setClients(parsed.clients);
-      if (parsed.clients.length > 0) {
-        setActiveClientId(parsed.clients[0].id);
-      }
-      setCurrentXml(xmlString);
-      saveDatabaseToStorage(xmlString);
-    } catch (e: any) {
-      triggerToast(e.message || 'Error al importar XML', 'error');
-    }
-  };
-
-  // Reset to default
-  const handleResetToDefault = () => {
-    const fresh = resetDatabaseToInitial();
-    setBrand(fresh.brand);
-    setRoutines(fresh.routines);
-    setClients(fresh.clients);
-    if (fresh.clients.length > 0) {
-      setActiveClientId(fresh.clients[0].id);
-    }
-    setCurrentXml(fresh.rawXml);
-  };
-
-  const handleReloadXml = () => {
-    const reloaded = loadDatabaseFromStorage();
-    setBrand(reloaded.brand);
-    setRoutines(reloaded.routines);
-    setClients(reloaded.clients);
-    setCurrentXml(reloaded.rawXml);
-    triggerToast('Base de datos XML recargada', 'info');
-  };
-
   return (
     <div className="app-layout">
       {/* Sidebar with White-label Brand Customization */}
@@ -281,14 +240,13 @@ export default function App() {
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           onOpenWhiteLabel={() => setIsWhiteLabelModalOpen(true)}
-          onReloadXml={handleReloadXml}
           isDarkTheme={isDarkTheme}
           onToggleTheme={() => setIsDarkTheme(!isDarkTheme)}
         />
 
         <main className="content-body">
-          {currentTab === 'fitia_diary' && activeClient && (
-            <FitiaDiaryView
+          {currentTab === 'ptcoach_diary' && activeClient && (
+            <PTcoachDiaryView
               clients={clients}
               activeClient={activeClient}
               onSelectClient={setActiveClientId}
@@ -317,7 +275,7 @@ export default function App() {
               routines={routines}
               brand={brand}
               onNavigateToClients={() => setCurrentTab('clients')}
-              onNavigateToXml={() => setCurrentTab('xml_manager')}
+              onNavigateToNutrition={() => setCurrentTab('ptcoach_diary')}
             />
           )}
 
@@ -340,18 +298,6 @@ export default function App() {
               routines={routines}
               brand={brand}
               onAddRoutine={handleAddRoutine}
-              onTriggerToast={triggerToast}
-            />
-          )}
-
-          {currentTab === 'xml_manager' && (
-            <XmlManagerView
-              currentXml={currentXml}
-              brand={brand}
-              routines={routines}
-              clients={clients}
-              onImportNewXml={handleImportNewXml}
-              onResetToDefault={handleResetToDefault}
               onTriggerToast={triggerToast}
             />
           )}

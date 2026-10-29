@@ -4,7 +4,7 @@ import {
   ShoppingCart,
   LayoutDashboard,
   Users,
-  FileCode2,
+  Dumbbell,
 } from 'lucide-react';
 import type { TabType } from './Sidebar';
 
@@ -20,11 +20,11 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   brandPrimaryColor,
 }) => {
   const tabs = [
-    { id: 'fitia_diary' as TabType, label: 'Diario', icon: UtensilsCrossed },
+    { id: 'ptcoach_diary' as TabType, label: 'Nutrición', icon: UtensilsCrossed },
     { id: 'grocery_list' as TabType, label: 'Súper', icon: ShoppingCart },
-    { id: 'dashboard' as TabType, label: 'Panel', icon: LayoutDashboard },
+    { id: 'dashboard' as TabType, label: 'Resumen', icon: LayoutDashboard },
     { id: 'clients' as TabType, label: 'Atletas', icon: Users },
-    { id: 'xml_manager' as TabType, label: 'XML', icon: FileCode2 },
+    { id: 'workouts' as TabType, label: 'Rutinas', icon: Dumbbell },
   ];
 
   return (
@@ -39,7 +39,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             className={`bottom-nav-item ${isActive ? 'bottom-nav-active' : ''}`}
             style={isActive ? { color: brandPrimaryColor } : {}}
           >
-            <Icon size={20} className="bottom-nav-icon" />
+            <Icon size={19} className="bottom-nav-icon" />
             <span className="bottom-nav-label">{tab.label}</span>
             {isActive && (
               <span

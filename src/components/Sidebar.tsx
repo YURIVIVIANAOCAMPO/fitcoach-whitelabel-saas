@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Users,
   Dumbbell,
-  FileCode2,
   Sparkles,
   Flame,
   Zap,
@@ -19,12 +18,11 @@ import {
 import type { BrandConfig } from '../types';
 
 export type TabType =
-  | 'fitia_diary'
+  | 'ptcoach_diary'
   | 'grocery_list'
   | 'dashboard'
   | 'clients'
-  | 'workouts'
-  | 'xml_manager';
+  | 'workouts';
 
 interface SidebarProps {
   currentTab: TabType;
@@ -50,37 +48,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const renderLogoIcon = () => {
     switch (brand.logoIcon) {
       case 'dumbbell':
-        return <Dumbbell size={20} />;
+        return <Dumbbell size={19} />;
       case 'flame':
-        return <Flame size={20} />;
+        return <Flame size={19} />;
       case 'zap':
-        return <Zap size={20} />;
+        return <Zap size={19} />;
       case 'trophy':
-        return <Trophy size={20} />;
+        return <Trophy size={19} />;
       case 'crown':
-        return <Crown size={20} />;
+        return <Crown size={19} />;
       case 'activity':
       default:
-        return <Activity size={20} />;
+        return <Activity size={19} />;
     }
   };
 
   const navItems = [
     {
-      id: 'fitia_diary' as TabType,
-      label: 'Diario Fitia & Macros',
+      id: 'ptcoach_diary' as TabType,
+      label: 'Nutrición & Macros',
       icon: UtensilsCrossed,
-      badge: 'PRO',
+      badge: 'Diario',
     },
     {
       id: 'grocery_list' as TabType,
-      label: 'Lista de Compras Súper',
+      label: 'Lista de Compras',
       icon: ShoppingCart,
       badge: null,
     },
     {
       id: 'dashboard' as TabType,
-      label: 'Panel de Control',
+      label: 'Resumen General',
       icon: LayoutDashboard,
       badge: null,
     },
@@ -96,12 +94,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Dumbbell,
       badge: null,
     },
-    {
-      id: 'xml_manager' as TabType,
-      label: 'Gestión de Datos XML',
-      icon: FileCode2,
-      badge: 'XML',
-    },
   ];
 
   return (
@@ -109,13 +101,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpen && <div className="sidebar-backdrop" onClick={onCloseMobile} />}
 
       <aside className={`sidebar-container ${isOpen ? 'sidebar-open' : ''}`}>
-        {/* White-Label Studio Brand Header */}
+        {/* Brand Header */}
         <div className="sidebar-brand">
           <div
             className="brand-icon-box"
             style={{
               backgroundColor: brand.primaryColor,
-              boxShadow: `0 4px 14px ${brand.primaryColor}55`,
+              boxShadow: `0 4px 14px ${brand.primaryColor}40`,
             }}
           >
             {renderLogoIcon()}
@@ -134,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation list */}
         <nav className="sidebar-nav">
-          <div className="nav-group-title">Flujo de Trabajo Fitia</div>
+          <div className="nav-group-title">Módulos de Gestión</div>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.id;
@@ -149,7 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 style={
                   isActive
                     ? {
-                        backgroundColor: `${brand.primaryColor}18`,
+                        backgroundColor: `${brand.primaryColor}14`,
                         color: brand.primaryColor,
                         borderLeftColor: brand.primaryColor,
                       }
@@ -164,8 +156,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span
                     className="nav-badge"
                     style={
-                      item.badge === 'PRO' || item.badge === 'XML'
-                        ? { backgroundColor: `${brand.primaryColor}25`, color: brand.primaryColor }
+                      item.badge === 'Diario'
+                        ? { backgroundColor: `${brand.primaryColor}20`, color: brand.primaryColor }
                         : {}
                     }
                   >
@@ -187,8 +179,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }}
             className="btn-whitelabel-trigger"
             style={{
-              borderColor: `${brand.primaryColor}55`,
-              backgroundColor: `${brand.primaryColor}10`,
+              borderColor: `${brand.primaryColor}40`,
+              backgroundColor: `${brand.primaryColor}0d`,
             }}
           >
             <Sparkles size={16} style={{ color: brand.primaryColor }} />
@@ -196,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="font-semibold text-xs" style={{ color: brand.primaryColor }}>
                 Marca Blanca
               </div>
-              <div className="text-muted text-[10px]">Personalizar Colores &amp; Logo</div>
+              <div className="text-muted text-[10px]">Personalizar Colores &amp; Marca</div>
             </div>
           </button>
         </div>

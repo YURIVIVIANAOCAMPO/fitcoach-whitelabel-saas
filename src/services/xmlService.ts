@@ -38,14 +38,14 @@ export function parseFitCoachXml(xmlString: string): ParsedDatabase {
   // 1. Parse Brand Config
   const brandEl = xmlDoc.getElementsByTagName('brand')[0];
   const brand: BrandConfig = {
-    brandName: brandEl?.getElementsByTagName('brand_name')[0]?.textContent || 'Fitia Coach Pro',
+    brandName: brandEl?.getElementsByTagName('brand_name')[0]?.textContent || 'PTcoach Pro',
     coachName: brandEl?.getElementsByTagName('coach_name')[0]?.textContent || 'Coach Viviana Ocampo',
     coachTitle: brandEl?.getElementsByTagName('coach_title')[0]?.textContent || 'Especialista en Nutrición & Hipertrofia',
-    subdomain: brandEl?.getElementsByTagName('subdomain')[0]?.textContent || 'viviana.fitiacoach.fit',
-    primaryColor: brandEl?.getElementsByTagName('primary_color')[0]?.textContent || '#84cc16',
-    accentColor: brandEl?.getElementsByTagName('accent_color')[0]?.textContent || '#22c55e',
-    logoIcon: (brandEl?.getElementsByTagName('logo_icon')[0]?.textContent as any) || 'flame',
-    supportEmail: brandEl?.getElementsByTagName('support_email')[0]?.textContent || 'coach@fitiacoach.fit',
+    subdomain: brandEl?.getElementsByTagName('subdomain')[0]?.textContent || 'viviana.ptcoach.app',
+    primaryColor: brandEl?.getElementsByTagName('primary_color')[0]?.textContent || '#2563eb',
+    accentColor: brandEl?.getElementsByTagName('accent_color')[0]?.textContent || '#0ea5e9',
+    logoIcon: (brandEl?.getElementsByTagName('logo_icon')[0]?.textContent as any) || 'activity',
+    supportEmail: brandEl?.getElementsByTagName('support_email')[0]?.textContent || 'coach@ptcoach.app',
     currency: brandEl?.getElementsByTagName('currency')[0]?.textContent || 'USD',
   };
 

@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   Flame,
   CheckCircle2,
+  UtensilsCrossed,
 } from 'lucide-react';
 import type { Client, WorkoutRoutine, BrandConfig } from '../types';
 
@@ -17,7 +18,7 @@ interface DashboardViewProps {
   routines: WorkoutRoutine[];
   brand: BrandConfig;
   onNavigateToClients: () => void;
-  onNavigateToXml: () => void;
+  onNavigateToNutrition: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -25,7 +26,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   routines,
   brand,
   onNavigateToClients,
-  onNavigateToXml,
+  onNavigateToNutrition,
 }) => {
   const activeClients = clients.filter((c) => c.status === 'active');
   const pendingPayments = clients.filter((c) => c.paymentStatus !== 'paid');
@@ -57,7 +58,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     {
       title: 'Rutinas Prescritas',
       value: routines.length.toString(),
-      subtext: 'Plantillas en base XML',
+      subtext: 'Programas de fuerza activos',
       icon: Dumbbell,
       trend: 'Programas optimizados',
     },
@@ -104,8 +105,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <Users size={16} />
             <span>Ver Directorio de Atletas</span>
           </button>
-          <button onClick={onNavigateToXml} className="btn-secondary">
-            <span>Ver Base de Datos XML</span>
+          <button onClick={onNavigateToNutrition} className="btn-secondary">
+            <UtensilsCrossed size={16} />
+            <span>Plan Nutricional & Macros</span>
           </button>
         </div>
       </div>

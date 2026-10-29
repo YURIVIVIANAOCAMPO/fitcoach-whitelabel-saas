@@ -10,7 +10,7 @@ export interface FoodDatabaseItem {
   servingLabel: string;
 }
 
-export const FITIA_FOOD_DATABASE: FoodDatabaseItem[] = [
+export const PTCOACH_FOOD_DATABASE: FoodDatabaseItem[] = [
   // Proteins
   {
     id: 'f-1',
@@ -252,3 +252,6 @@ export function calculateMacrosForGrams(item: FoodDatabaseItem, grams: number) {
     fats: Math.round(item.fatsPer100g * factor * 10) / 10,
   };
 }
+
+export const FITIA_FOOD_DATABASE = PTCOACH_FOOD_DATABASE;
+

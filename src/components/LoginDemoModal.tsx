@@ -29,7 +29,7 @@ export const LoginDemoModal: React.FC<LoginDemoModalProps> = ({
 
         <div className="login-demo-badge">
           <ShieldCheck size={16} className="text-brand" />
-          <span>Acceso Demostración Activo • Solo Front / XML</span>
+          <span>Acceso Demostración Activo • API Simulada con XML</span>
         </div>
 
         <div className="demo-credentials-box">
@@ -42,8 +42,8 @@ export const LoginDemoModal: React.FC<LoginDemoModalProps> = ({
             <span className="demo-value">Head Coach &amp; Administrador</span>
           </div>
           <div className="demo-field">
-            <span className="demo-label">Almacenamiento:</span>
-            <span className="demo-value">XML Client-Side (DOMParser)</span>
+            <span className="demo-label">Arquitectura:</span>
+            <span className="demo-value">Simulador API + Contratos en XML</span>
           </div>
         </div>
 
@@ -57,7 +57,7 @@ export const LoginDemoModal: React.FC<LoginDemoModalProps> = ({
         </button>
 
         <p className="login-footnote">
-          Los datos se gestionan y guardan en formato XML local en tu navegador.
+          Los datos y contratos se procesan internamente vía XML simulando el backend y base de datos.
         </p>
       </div>
     </div>

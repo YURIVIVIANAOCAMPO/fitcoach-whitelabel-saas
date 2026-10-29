@@ -21,13 +21,13 @@ interface WhiteLabelSettingsModalProps {
 }
 
 const PRESET_COLORS = [
-  { name: 'Volt Lime', hex: '#84cc16' },
-  { name: 'Electric Cyan', hex: '#06b6d4' },
-  { name: 'Sunset Orange', hex: '#f97316' },
-  { name: 'Crimson Rose', hex: '#f43f5e' },
-  { name: 'Royal Violet', hex: '#8b5cf6' },
-  { name: 'Golden Amber', hex: '#f59e0b' },
-  { name: 'Emerald Pro', hex: '#10b981' },
+  { name: 'Royal Blue (PTcoach)', hex: '#2563eb' },
+  { name: 'Sky Tech', hex: '#0284c7' },
+  { name: 'Deep Navy', hex: '#1d4ed8' },
+  { name: 'Electric Cyan', hex: '#0ea5e9' },
+  { name: 'Indigo Sleek', hex: '#4f46e5' },
+  { name: 'Teal Pro', hex: '#0d9488' },
+  { name: 'Emerald Minimal', hex: '#10b981' },
 ];
 
 export const WhiteLabelSettingsModal: React.FC<WhiteLabelSettingsModalProps> = ({

@@ -66,7 +66,7 @@ export const GroceryListView: React.FC<GroceryListViewProps> = ({
   };
 
   const handleCopyWhatsappList = () => {
-    let text = `🛒 *LISTA DE COMPRAS SEMANAL - FITIA*\n`;
+    let text = `🛒 *LISTA DE COMPRAS SEMANAL - PTCOACH*\n`;
     text += `👤 *Atleta:* ${activeClient.fullName}\n`;
     text += `🏋️ *Entrenador:* ${brand.coachName} (${brand.brandName})\n`;
     text += `📅 *Generada para:* 7 días estimados\n\n`;
@@ -133,7 +133,7 @@ export const GroceryListView: React.FC<GroceryListViewProps> = ({
             <ShoppingCart size={24} />
           </div>
           <div>
-            <h1 className="section-title">Lista de Compras Inteligente Fitia</h1>
+            <h1 className="section-title">Lista de Compras Inteligente PTcoach</h1>
             <p className="section-desc">
               Cantidades calculadas automáticamente a partir de las 4 comidas del atleta {activeClient.fullName}.
             </p>

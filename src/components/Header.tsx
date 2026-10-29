@@ -3,10 +3,9 @@ import {
   Menu,
   Search,
   Sparkles,
-  FileCode2,
-  RefreshCw,
   Sun,
   Moon,
+  Activity,
 } from 'lucide-react';
 import type { BrandConfig } from '../types';
 
@@ -16,7 +15,6 @@ interface HeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onOpenWhiteLabel: () => void;
-  onReloadXml: () => void;
   isDarkTheme: boolean;
   onToggleTheme: () => void;
 }
@@ -27,7 +25,6 @@ export const Header: React.FC<HeaderProps> = ({
   searchTerm,
   onSearchChange,
   onOpenWhiteLabel,
-  onReloadXml,
   isDarkTheme,
   onToggleTheme,
 }) => {
@@ -43,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         <div className="search-bar">
-          <Search size={16} className="search-icon" />
+          <Search size={15} className="search-icon" />
           <input
             type="text"
             placeholder="Buscar atletas por nombre, objetivo o email..."
@@ -63,20 +60,11 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="header-right">
-        {/* XML Status Badge */}
-        <div className="xml-status-badge">
-          <FileCode2 size={14} className="text-brand" />
-          <span className="xml-status-text">Datos XML Sincronizados</span>
+        {/* Status indicator */}
+        <div className="system-live-pill">
+          <Activity size={13} className="text-brand animate-pulse" />
+          <span className="text-xs text-secondary font-medium">PTcoach Activo</span>
         </div>
-
-        {/* Refresh XML Button */}
-        <button
-          onClick={onReloadXml}
-          className="header-icon-btn"
-          title="Recargar base de datos XML"
-        >
-          <RefreshCw size={16} />
-        </button>
 
         {/* Dark/Light mode toggle */}
         <button
@@ -92,12 +80,12 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={onOpenWhiteLabel}
           className="btn-header-whitelabel"
           style={{
-            borderColor: `${brand.primaryColor}66`,
-            backgroundColor: `${brand.primaryColor}15`,
+            borderColor: `${brand.primaryColor}55`,
+            backgroundColor: `${brand.primaryColor}12`,
             color: brand.primaryColor,
           }}
         >
-          <Sparkles size={15} />
+          <Sparkles size={14} />
           <span className="whitelabel-btn-label">Personalizar Marca</span>
         </button>
       </div>

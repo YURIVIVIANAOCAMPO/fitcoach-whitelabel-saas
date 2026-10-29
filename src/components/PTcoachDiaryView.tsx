@@ -14,9 +14,9 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { Client, MealType, FoodItem, BrandConfig } from '../types';
-import { FITIA_FOOD_DATABASE, calculateMacrosForGrams, type FoodDatabaseItem } from '../data/foodDatabase';
+import { PTCOACH_FOOD_DATABASE, calculateMacrosForGrams, type FoodDatabaseItem } from '../data/foodDatabase';
 
-interface FitiaDiaryViewProps {
+interface PTcoachDiaryViewProps {
   clients: Client[];
   activeClient: Client;
   onSelectClient: (clientId: string) => void;
@@ -28,7 +28,7 @@ interface FitiaDiaryViewProps {
   onTriggerToast: (msg: string, type?: 'success' | 'info') => void;
 }
 
-export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
+export const PTcoachDiaryView: React.FC<PTcoachDiaryViewProps> = ({
   clients,
   activeClient,
   onSelectClient,
@@ -75,14 +75,14 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
   const kcalRatio = Math.min(100, Math.round((totalConsumedKcal / targetKcal) * 100));
 
   // Filter foods for modal
-  const filteredDbFoods = FITIA_FOOD_DATABASE.filter((f) =>
+  const filteredDbFoods = PTCOACH_FOOD_DATABASE.filter((f) =>
     f.name.toLowerCase().includes(foodSearchQuery.toLowerCase())
   );
 
   const handleOpenAddFoodModal = (mealType: MealType) => {
     setModalMealType(mealType);
-    setSelectedFoodDbItem(FITIA_FOOD_DATABASE[0]);
-    setPortionGrams(FITIA_FOOD_DATABASE[0].defaultGrams);
+    setSelectedFoodDbItem(PTCOACH_FOOD_DATABASE[0]);
+    setPortionGrams(PTCOACH_FOOD_DATABASE[0].defaultGrams);
     setFoodSearchQuery('');
   };
 
@@ -109,7 +109,7 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
     };
 
     onAddFoodToMeal(activeClient.id, modalMealType, newFood);
-    onTriggerToast(`Agregado a ${modalMealType}: ${newFood.name} (${newFood.grams}g)`, 'success');
+    onTriggerToast(`Alimento agregado a ${modalMealType}: ${newFood.name} (${newFood.grams}g)`, 'success');
     setModalMealType(null);
   };
 
@@ -118,11 +118,11 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
       case 'breakfast':
         return <Sun size={17} className="text-amber-400" />;
       case 'lunch':
-        return <Utensils size={17} className="text-emerald-400" />;
+        return <Utensils size={17} className="text-blue-400" />;
       case 'snack':
-        return <Coffee size={17} className="text-indigo-400" />;
+        return <Coffee size={17} className="text-cyan-400" />;
       case 'dinner':
-        return <Moon size={17} className="text-blue-400" />;
+        return <Moon size={17} className="text-indigo-400" />;
     }
   };
 
@@ -131,20 +131,20 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
     : null;
 
   return (
-    <div className="fitia-diary-container">
+    <div className="ptcoach-diary-container">
       {/* Client Switcher Banner */}
-      <div className="fitia-client-selector-bar">
+      <div className="ptcoach-client-selector-bar">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted uppercase font-semibold">Atleta Activo:</span>
+          <span className="text-xs text-muted uppercase font-bold tracking-wider">Atleta en Seguimiento:</span>
           <div className="relative-container">
             <select
               value={activeClient.id}
               onChange={(e) => onSelectClient(e.target.value)}
-              className="fitia-client-select"
+              className="ptcoach-client-select"
             >
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.fullName} • {c.goal === 'fat_loss' ? 'Definición' : c.goal === 'hypertrophy' ? 'Hipertrofia' : 'Fuerza'} ({c.nutrition.dailyCalories} kcal)
+                  {c.fullName} • {c.goal === 'fat_loss' ? 'Pérdida de Grasa' : c.goal === 'hypertrophy' ? 'Hipertrofia' : 'Fuerza'} ({c.nutrition.dailyCalories} kcal)
                 </option>
               ))}
             </select>
@@ -152,15 +152,15 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
           </div>
         </div>
 
-        <div className="fitia-date-badge">
-          <span>Hoy • Plan Fitia Diario Sincronizado</span>
+        <div className="ptcoach-date-badge">
+          <span>Plan Nutricional Activo • Hoy</span>
         </div>
       </div>
 
-      {/* Hero Fitia Calories & Macros Card */}
-      <div className="fitia-macro-card">
-        <div className="fitia-macro-header">
-          <div className="fitia-cal-circle">
+      {/* Hero Calories & Macros Card */}
+      <div className="ptcoach-macro-card">
+        <div className="ptcoach-macro-header">
+          <div className="ptcoach-cal-circle">
             <svg viewBox="0 0 100 100" className="cal-svg-ring">
               <circle
                 cx="50"
@@ -190,69 +190,69 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
             </div>
           </div>
 
-          <div className="fitia-macro-breakdown">
+          <div className="ptcoach-macro-breakdown">
             <div className="cal-equation-row">
               <div className="equation-item">
-                <span className="eq-label">Meta</span>
-                <span className="eq-val font-semibold">{targetKcal}</span>
+                <span className="eq-label">Meta Calórica</span>
+                <span className="eq-val font-semibold">{targetKcal} kcal</span>
               </div>
               <span className="eq-sign">-</span>
               <div className="equation-item">
                 <span className="eq-label">Consumidas</span>
-                <span className="eq-val text-brand font-semibold">{totalConsumedKcal}</span>
+                <span className="eq-val text-brand font-semibold">{totalConsumedKcal} kcal</span>
               </div>
               <span className="eq-sign">=</span>
               <div className="equation-item">
-                <span className="eq-label">Restantes</span>
+                <span className="eq-label">Balance</span>
                 <span className="eq-val text-primary font-bold">{remainingKcal} kcal</span>
               </div>
             </div>
 
             {/* 3 Macro Progress Bars */}
-            <div className="fitia-bars-list">
+            <div className="ptcoach-bars-list">
               {/* Protein */}
-              <div className="fitia-bar-group">
+              <div className="ptcoach-bar-group">
                 <div className="bar-label-row">
-                  <span className="bar-name text-cyan-400">Proteínas</span>
+                  <span className="bar-name text-blue-400">Proteínas</span>
                   <span className="bar-numbers">
                     <strong>{Math.round(totalConsumedProtein)}</strong> / {targetProtein}g
                   </span>
                 </div>
-                <div className="fitia-bar-track">
+                <div className="ptcoach-bar-track">
                   <div
-                    className="fitia-bar-fill fill-protein"
+                    className="ptcoach-bar-fill fill-protein"
                     style={{ width: `${proteinRatio}%` }}
                   />
                 </div>
               </div>
 
               {/* Carbs */}
-              <div className="fitia-bar-group">
+              <div className="ptcoach-bar-group">
                 <div className="bar-label-row">
-                  <span className="bar-name text-amber-400">Carbohidratos</span>
+                  <span className="bar-name text-sky-400">Carbohidratos</span>
                   <span className="bar-numbers">
                     <strong>{Math.round(totalConsumedCarbs)}</strong> / {targetCarbs}g
                   </span>
                 </div>
-                <div className="fitia-bar-track">
+                <div className="ptcoach-bar-track">
                   <div
-                    className="fitia-bar-fill fill-carbs"
+                    className="ptcoach-bar-fill fill-carbs"
                     style={{ width: `${carbsRatio}%` }}
                   />
                 </div>
               </div>
 
               {/* Fats */}
-              <div className="fitia-bar-group">
+              <div className="ptcoach-bar-group">
                 <div className="bar-label-row">
-                  <span className="bar-name text-rose-400">Grasas</span>
+                  <span className="bar-name text-indigo-400">Grasas Saludables</span>
                   <span className="bar-numbers">
                     <strong>{Math.round(totalConsumedFats)}</strong> / {targetFats}g
                   </span>
                 </div>
-                <div className="fitia-bar-track">
+                <div className="ptcoach-bar-track">
                   <div
-                    className="fitia-bar-fill fill-fats"
+                    className="ptcoach-bar-fill fill-fats"
                     style={{ width: `${fatsRatio}%` }}
                   />
                 </div>
@@ -261,16 +261,16 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
           </div>
         </div>
 
-        {/* Fitia Water Intake Tracker */}
-        <div className="fitia-water-tracker">
+        {/* Water Tracker */}
+        <div className="ptcoach-water-tracker">
           <div className="water-left">
             <div className="water-icon-circle">
-              <Droplets size={18} className="text-cyan-400" />
+              <Droplets size={18} className="text-blue-400" />
             </div>
             <div>
-              <div className="font-semibold text-sm">Hidratación Diaria Fitia</div>
+              <div className="font-semibold text-sm">Control de Hidratación</div>
               <div className="text-xs text-muted">
-                {dailyPlan.waterGlasses * 250} ml consumidos de {dailyPlan.targetWaterGlasses * 250} ml recomendados
+                {dailyPlan.waterGlasses * 250} ml de {dailyPlan.targetWaterGlasses * 250} ml recomendados hoy
               </div>
             </div>
           </div>
@@ -279,17 +279,17 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
             <button
               onClick={() => onUpdateWaterGlasses(activeClient.id, -1)}
               className="btn-water-step"
-              title="Quitar vaso (-250ml)"
+              title="Restar vaso (-250ml)"
             >
               -
             </button>
             <div className="water-glasses-count">
-              <span className="font-bold text-cyan-400">{dailyPlan.waterGlasses}</span> / {dailyPlan.targetWaterGlasses} vasos
+              <span className="font-bold text-blue-400">{dailyPlan.waterGlasses}</span> / {dailyPlan.targetWaterGlasses} vasos
             </div>
             <button
               onClick={() => onUpdateWaterGlasses(activeClient.id, 1)}
               className="btn-water-step"
-              title="Agregar vaso (+250ml)"
+              title="Sumar vaso (+250ml)"
             >
               +
             </button>
@@ -298,20 +298,20 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
       </div>
 
       {/* 4 Meals of the Day */}
-      <div className="fitia-meals-container">
+      <div className="ptcoach-meals-container">
         {dailyPlan.meals.map((meal) => {
           const mealConsumedKcal = meal.foods.reduce((sum, f) => (f.checked ? sum + f.kcal : sum), 0);
           const mealTotalKcal = meal.foods.reduce((sum, f) => sum + f.kcal, 0);
 
           return (
-            <div key={meal.id} className="fitia-meal-card">
-              <div className="fitia-meal-header">
+            <div key={meal.id} className="ptcoach-meal-card">
+              <div className="ptcoach-meal-header">
                 <div className="flex items-center gap-2">
                   <div className="meal-icon-box">{getMealIcon(meal.type)}</div>
                   <div>
                     <h3 className="meal-title">{meal.name}</h3>
                     <div className="meal-kcal-meta">
-                      Consumido: <span className="text-brand font-semibold">{mealConsumedKcal} kcal</span> • Planificado: {mealTotalKcal} kcal
+                      Consumido: <span className="text-brand font-semibold">{mealConsumedKcal} kcal</span> • Plan: {mealTotalKcal} kcal
                     </div>
                   </div>
                 </div>
@@ -326,24 +326,24 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                 </button>
               </div>
 
-              {/* Foods List inside Meal */}
-              <div className="fitia-foods-list">
+              {/* Foods List */}
+              <div className="ptcoach-foods-list">
                 {meal.foods.length === 0 ? (
                   <div className="empty-meal-slot">
-                    No hay alimentos registrados en este tiempo de comida. Haz clic en "Agregar Alimento" para prescribir o registrar.
+                    No hay alimentos prescritos para esta comida. Haz clic en "Agregar Alimento".
                   </div>
                 ) : (
                   meal.foods.map((food) => (
                     <div
                       key={food.id}
-                      className={`fitia-food-row ${food.checked ? 'food-row-checked' : ''}`}
+                      className={`ptcoach-food-row ${food.checked ? 'food-row-checked' : ''}`}
                     >
                       <button
                         onClick={() => onToggleFoodCheck(activeClient.id, meal.type, food.id)}
                         className={`food-checkbox ${food.checked ? 'food-checkbox-checked' : ''}`}
                         style={food.checked ? { backgroundColor: brand.primaryColor, borderColor: brand.primaryColor } : {}}
                       >
-                        {food.checked && <Check size={12} className="text-black font-bold" />}
+                        {food.checked && <Check size={12} className="text-white font-bold" />}
                       </button>
 
                       <div className="food-info-flex">
@@ -357,16 +357,16 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                         </div>
                         <div className="food-macros-row">
                           <span className="food-kcal font-semibold text-brand">{food.kcal} kcal</span>
-                          <span className="macro-chip text-cyan-400">P: {food.protein}g</span>
-                          <span className="macro-chip text-amber-400">C: {food.carbs}g</span>
-                          <span className="macro-chip text-rose-400">G: {food.fats}g</span>
+                          <span className="macro-chip text-blue-400">P: {food.protein}g</span>
+                          <span className="macro-chip text-sky-400">C: {food.carbs}g</span>
+                          <span className="macro-chip text-indigo-400">G: {food.fats}g</span>
                         </div>
                       </div>
 
                       <button
                         onClick={() => onDeleteFood(activeClient.id, meal.type, food.id)}
                         className="btn-delete-food"
-                        title="Eliminar alimento de la comida"
+                        title="Eliminar alimento"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -379,7 +379,7 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
         })}
       </div>
 
-      {/* Modal: Smart Food Search & Grams Calculator (Fitia Style) */}
+      {/* Modal: Smart Food Search & Portion Calculator */}
       {modalMealType && (
         <div className="modal-backdrop">
           <div className="modal-card modal-card-lg">
@@ -395,14 +395,14 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
               </button>
             </div>
 
-            <div className="modal-fitia-food-layout">
-              {/* Left Column: Food Search List */}
+            <div className="modal-ptcoach-food-layout">
+              {/* Left Column: Food Search */}
               <div className="food-search-col">
                 <div className="search-bar mb-2">
                   <Search size={15} className="text-muted" />
                   <input
                     type="text"
-                    placeholder="Buscar pollo, avena, huevo, arroz..."
+                    placeholder="Buscar pollo, avena, huevo, arroz, aguacate..."
                     value={foodSearchQuery}
                     onChange={(e) => setFoodSearchQuery(e.target.value)}
                     className="search-input"
@@ -419,7 +419,7 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                         type="button"
                         onClick={() => handleSelectDbFood(item)}
                         className={`food-db-item ${isSelected ? 'food-db-item-selected' : ''}`}
-                        style={isSelected ? { borderColor: brand.primaryColor, backgroundColor: `${brand.primaryColor}14` } : {}}
+                        style={isSelected ? { borderColor: brand.primaryColor, backgroundColor: `${brand.primaryColor}12` } : {}}
                       >
                         <div className="font-semibold text-sm">{item.name}</div>
                         <div className="text-xs text-muted">
@@ -431,18 +431,18 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                 </div>
               </div>
 
-              {/* Right Column: Portion Adjustment & Real-Time Macro preview */}
+              {/* Right Column: Portion Slider & Real-Time Macro preview */}
               {selectedFoodDbItem && (
                 <form onSubmit={handleConfirmAddFood} className="food-portion-col">
                   <div className="portion-box-header">
                     <h4 className="font-bold text-base text-primary">{selectedFoodDbItem.name}</h4>
-                    <span className="text-xs text-muted">Ajusta los gramos para calcular automáticamente</span>
+                    <span className="text-xs text-muted">Ajusta los gramos para calcular aporte</span>
                   </div>
 
                   <div className="form-group my-3">
                     <label className="form-label flex justify-between">
-                      <span>Cantidad en Gramos (g)</span>
-                      <span className="font-mono text-brand font-bold">{portionGrams} gramos</span>
+                      <span>Porción en Gramos (g)</span>
+                      <span className="font-mono text-brand font-bold">{portionGrams} g</span>
                     </label>
                     <input
                       type="range"
@@ -451,7 +451,7 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                       step="5"
                       value={portionGrams}
                       onChange={(e) => setPortionGrams(parseInt(e.target.value, 10))}
-                      className="fitia-slider"
+                      className="ptcoach-slider"
                     />
                     <div className="flex gap-2 mt-2">
                       {[50, 100, 150, 200, 250].map((quickGrams) => (
@@ -467,7 +467,7 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Real-time macro calculated card */}
+                  {/* Calculated macro card */}
                   {liveCalculatedMacros && (
                     <div className="live-macro-calc-card">
                       <div className="flex justify-between items-center mb-2">
@@ -476,15 +476,15 @@ export const FitiaDiaryView: React.FC<FitiaDiaryViewProps> = ({
                       </div>
                       <div className="macros-grid">
                         <div className="macro-card">
-                          <span className="macro-name text-cyan-400">Proteínas</span>
+                          <span className="macro-name text-blue-400">Proteínas</span>
                           <span className="macro-val">{liveCalculatedMacros.protein}g</span>
                         </div>
                         <div className="macro-card">
-                          <span className="macro-name text-amber-400">Carbos</span>
+                          <span className="macro-name text-sky-400">Carbos</span>
                           <span className="macro-val">{liveCalculatedMacros.carbs}g</span>
                         </div>
                         <div className="macro-card">
-                          <span className="macro-name text-rose-400">Grasas</span>
+                          <span className="macro-name text-indigo-400">Grasas</span>
                           <span className="macro-val">{liveCalculatedMacros.fats}g</span>
                         </div>
                       </div>
