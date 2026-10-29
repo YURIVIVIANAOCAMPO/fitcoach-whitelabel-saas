@@ -198,114 +198,215 @@ export const ClientsView: React.FC<ClientsViewProps> = ({
         </div>
       </div>
 
-      {/* Clients Table */}
+      {/* Clients List: Desktop Table + Mobile Cards */}
       <div className="card-panel table-panel">
-        <div className="table-responsive">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Atleta</th>
-                <th>Objetivo Principal</th>
-                <th>Antropometría Reciente</th>
-                <th>Rutina Asignada</th>
-                <th>Mensualidad</th>
-                <th>Estado</th>
-                <th className="text-right">Ficha</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredClients.length === 0 ? (
+        {/* Desktop Table View */}
+        <div className="desktop-table-container">
+          <div className="table-responsive">
+            <table className="custom-table">
+              <thead>
                 <tr>
-                  <td colSpan={7} className="empty-state">
-                    No hay atletas que coincidan con la búsqueda.
-                  </td>
+                  <th>Atleta</th>
+                  <th>Objetivo Principal</th>
+                  <th>Antropometría Reciente</th>
+                  <th>Rutina Asignada</th>
+                  <th>Mensualidad</th>
+                  <th>Estado</th>
+                  <th className="text-right">Ficha</th>
                 </tr>
-              ) : (
-                filteredClients.map((client) => {
-                  const latestRecord = client.records[client.records.length - 1];
-                  return (
-                    <tr key={client.id}>
-                      <td>
-                        <div className="athlete-cell">
-                          <div
-                            className="athlete-avatar"
-                            style={{ backgroundColor: brand.primaryColor }}
-                          >
-                            {client.fullName
-                              .split(' ')
-                              .map((n) => n[0])
-                              .slice(0, 2)
-                              .join('')}
-                          </div>
-                          <div>
-                            <div className="athlete-name">{client.fullName}</div>
-                            <div className="athlete-sub">
-                              {client.gender === 'M' ? 'Hombre' : 'Mujer'}, {client.age} años • {client.phone}
+              </thead>
+              <tbody>
+                {filteredClients.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="empty-state">
+                      No hay atletas que coincidan con la búsqueda.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredClients.map((client) => {
+                    const latestRecord = client.records[client.records.length - 1];
+                    return (
+                      <tr key={client.id}>
+                        <td>
+                          <div className="athlete-cell">
+                            <div
+                              className="athlete-avatar"
+                              style={{ backgroundColor: brand.primaryColor }}
+                            >
+                              {client.fullName
+                                .split(' ')
+                                .map((n) => n[0])
+                                .slice(0, 2)
+                                .join('')}
+                            </div>
+                            <div>
+                              <div className="athlete-name">{client.fullName}</div>
+                              <div className="athlete-sub">
+                                {client.gender === 'M' ? 'Hombre' : 'Mujer'}, {client.age} años • {client.phone}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>{getGoalBadge(client.goal)}</td>
-                      <td>
-                        {latestRecord ? (
-                          <div className="text-xs">
-                            <span className="font-semibold">{latestRecord.weightKg} kg</span> •{' '}
-                            <span className="text-secondary">{latestRecord.bodyFatPercentage}% grasa</span>
+                        </td>
+                        <td>{getGoalBadge(client.goal)}</td>
+                        <td>
+                          {latestRecord ? (
+                            <div className="text-xs">
+                              <span className="font-semibold">{latestRecord.weightKg} kg</span> •{' '}
+                              <span className="text-secondary">{latestRecord.bodyFatPercentage}% grasa</span>
+                            </div>
+                          ) : (
+                            <span className="text-muted text-xs">Sin registros</span>
+                          )}
+                        </td>
+                        <td>
+                          <span className="routine-assigned-tag">
+                            {client.assignedRoutineName}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-sm">
+                              ${client.monthlyFeeUsd} {brand.currency}
+                            </span>
+                            <span
+                              className={`badge-payment status-${client.paymentStatus}`}
+                              title={`Pago: ${client.paymentStatus}`}
+                            >
+                              {client.paymentStatus === 'paid' ? (
+                                <CheckCircle2 size={12} />
+                              ) : client.paymentStatus === 'pending' ? (
+                                <Clock size={12} />
+                              ) : (
+                                <AlertTriangle size={12} />
+                              )}
+                            </span>
                           </div>
-                        ) : (
-                          <span className="text-muted text-xs">Sin registros</span>
-                        )}
-                      </td>
-                      <td>
-                        <span className="routine-assigned-tag">
-                          {client.assignedRoutineName}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-sm">
-                            ${client.monthlyFeeUsd} {brand.currency}
+                        </td>
+                        <td>
+                          <span className={`badge-status status-${client.status}`}>
+                            {client.status === 'active'
+                              ? 'Activo'
+                              : client.status === 'paused'
+                              ? 'Pausado'
+                              : 'Lesión'}
                           </span>
-                          <span
-                            className={`badge-payment status-${client.paymentStatus}`}
-                            title={`Pago: ${client.paymentStatus}`}
+                        </td>
+                        <td className="text-right">
+                          <button
+                            onClick={() => setSelectedClientForDetail(client)}
+                            className="btn-icon-table"
+                            title="Abrir Ficha 360°"
                           >
-                            {client.paymentStatus === 'paid' ? (
-                              <CheckCircle2 size={12} />
-                            ) : client.paymentStatus === 'pending' ? (
-                              <Clock size={12} />
-                            ) : (
-                              <AlertTriangle size={12} />
-                            )}
-                          </span>
+                            <ChevronRight size={17} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Mobile Cards View */}
+        <div className="mobile-athlete-cards-container">
+          {filteredClients.length === 0 ? (
+            <div className="empty-state py-6">
+              No hay atletas que coincidan con la búsqueda.
+            </div>
+          ) : (
+            filteredClients.map((client) => {
+              const latestRecord = client.records[client.records.length - 1];
+              return (
+                <div key={client.id} className="mobile-athlete-card">
+                  <div className="mobile-card-header">
+                    <div className="athlete-cell">
+                      <div
+                        className="athlete-avatar"
+                        style={{ backgroundColor: brand.primaryColor }}
+                      >
+                        {client.fullName
+                          .split(' ')
+                          .map((n) => n[0])
+                          .slice(0, 2)
+                          .join('')}
+                      </div>
+                      <div>
+                        <div className="athlete-name">{client.fullName}</div>
+                        <div className="athlete-sub">
+                          {client.gender === 'M' ? 'Hombre' : 'Mujer'}, {client.age} años • {client.phone}
                         </div>
-                      </td>
-                      <td>
-                        <span className={`badge-status status-${client.status}`}>
-                          {client.status === 'active'
-                            ? 'Activo'
-                            : client.status === 'paused'
-                            ? 'Pausado'
-                            : 'Lesión'}
+                      </div>
+                    </div>
+                    <span className={`badge-status status-${client.status}`}>
+                      {client.status === 'active'
+                        ? 'Activo'
+                        : client.status === 'paused'
+                        ? 'Pausado'
+                        : 'Lesión'}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-tags">
+                    <div className="mobile-tag-group">
+                      <span className="mobile-tag-label">Objetivo</span>
+                      <div>{getGoalBadge(client.goal)}</div>
+                    </div>
+                    <div className="mobile-tag-group">
+                      <span className="mobile-tag-label">Rutina</span>
+                      <span className="routine-assigned-tag">{client.assignedRoutineName}</span>
+                    </div>
+                  </div>
+
+                  <div className="mobile-card-meta-row">
+                    <div className="mobile-meta-item">
+                      <span className="mobile-meta-label">Antropometría</span>
+                      {latestRecord ? (
+                        <div className="mobile-meta-value">
+                          <strong>{latestRecord.weightKg} kg</strong> •{' '}
+                          <span className="text-secondary">{latestRecord.bodyFatPercentage}% grasa</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted text-xs">Sin registros</span>
+                      )}
+                    </div>
+                    <div className="mobile-meta-item">
+                      <span className="mobile-meta-label">Mensualidad</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-sm">
+                          ${client.monthlyFeeUsd} {brand.currency}
                         </span>
-                      </td>
-                      <td className="text-right">
-                        <button
-                          onClick={() => setSelectedClientForDetail(client)}
-                          className="btn-icon-table"
-                          title="Abrir Ficha 360°"
+                        <span
+                          className={`badge-payment status-${client.paymentStatus}`}
+                          title={`Pago: ${client.paymentStatus}`}
                         >
-                          <ChevronRight size={17} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                          {client.paymentStatus === 'paid' ? (
+                            <CheckCircle2 size={12} />
+                          ) : client.paymentStatus === 'pending' ? (
+                            <Clock size={12} />
+                          ) : (
+                            <AlertTriangle size={12} />
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedClientForDetail(client)}
+                    className="btn-mobile-card-action"
+                  >
+                    <span>Ver Ficha 360° del Atleta</span>
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
+
 
       {/* Ficha 360° Modal / Detail Drawer */}
       {selectedClientForDetail && (

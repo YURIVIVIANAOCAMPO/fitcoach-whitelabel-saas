@@ -141,8 +141,8 @@ export const WorkoutsView: React.FC<WorkoutsViewProps> = ({
               </div>
             </div>
 
-            {/* Exercise Table */}
-            <div className="exercises-table-wrapper">
+            {/* Exercise Table on Desktop */}
+            <div className="exercises-table-wrapper desktop-table-container">
               <table className="custom-table">
                 <thead>
                   <tr>
@@ -180,6 +180,36 @@ export const WorkoutsView: React.FC<WorkoutsViewProps> = ({
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Exercise Cards on Mobile */}
+            <div className="exercise-mobile-cards-container">
+              {selectedRoutine.exercises.map((ex, idx) => (
+                <div key={ex.id} className="exercise-mobile-card">
+                  <div className="exercise-card-header">
+                    <span className="exercise-num-badge">#{idx + 1}</span>
+                    <div className="exercise-card-title">{ex.name}</div>
+                  </div>
+                  <div className="exercise-card-metrics">
+                    <div className="metric-pill">
+                      <span className="metric-pill-label">Series</span>
+                      <strong className="metric-pill-val">{ex.sets}</strong>
+                    </div>
+                    <div className="metric-pill">
+                      <span className="metric-pill-label">Reps</span>
+                      <strong className="metric-pill-val text-brand">{ex.reps}</strong>
+                    </div>
+                    <div className="metric-pill">
+                      <Clock size={12} className="text-secondary" />
+                      <span className="metric-pill-val">{ex.restSecs}s descanso</span>
+                    </div>
+                  </div>
+                  <div className="exercise-card-notes">
+                    <span className="notes-label">Técnica Coach:</span>
+                    <span className="notes-text">{ex.notes || 'Técnica estricta'}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
