@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronRight,
   Globe,
+  X,
 } from 'lucide-react';
 import type { BrandConfig } from '../types';
 
@@ -116,6 +117,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="brand-name">{brand.brandName}</div>
             <span className="brand-sub">{brand.coachName}</span>
           </div>
+          <button
+            onClick={onCloseMobile}
+            className="sidebar-close-mobile-btn"
+            aria-label="Cerrar menú"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Subdomain pill */}
