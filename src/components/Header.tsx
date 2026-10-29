@@ -6,6 +6,7 @@ import {
   Sun,
   Moon,
   Activity,
+  LogOut,
 } from 'lucide-react';
 import type { BrandConfig } from '../types';
 
@@ -17,6 +18,7 @@ interface HeaderProps {
   onOpenWhiteLabel: () => void;
   isDarkTheme: boolean;
   onToggleTheme: () => void;
+  onLogout: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenWhiteLabel,
   isDarkTheme,
   onToggleTheme,
+  onLogout,
 }) => {
   return (
     <header className="header-container">
@@ -87,6 +90,16 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Sparkles size={14} />
           <span className="whitelabel-btn-label">Personalizar Marca</span>
+        </button>
+
+        {/* Quick Exit / Salir a Login */}
+        <button
+          onClick={onLogout}
+          className="header-icon-btn logout-header-btn"
+          title="Cerrar Sesión Demo (Salir al Login)"
+          aria-label="Salir a Login"
+        >
+          <LogOut size={16} />
         </button>
       </div>
     </header>

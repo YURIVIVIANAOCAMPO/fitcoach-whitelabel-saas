@@ -341,6 +341,12 @@
   background-color: var(--bg-card-hover);
 }
 
+.logout-header-btn:hover {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
 .btn-header-whitelabel {
   display: inline-flex;
   align-items: center;

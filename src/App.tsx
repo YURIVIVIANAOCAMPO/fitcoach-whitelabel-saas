@@ -42,7 +42,9 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('ptcoach_session_active') === 'true';
+  });
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
     return localStorage.getItem('fitcoach_theme') !== 'light';
   });
@@ -214,16 +216,26 @@ export default function App() {
     triggerToast(`Marca blanca actualizada: ${newBrand.brandName}`, 'success');
   };
 
+  const handleLogin = (coachName?: string) => {
+    localStorage.setItem('ptcoach_session_active', 'true');
+    setIsLoggedIn(true);
+    triggerToast(`Bienvenido de nuevo, ${coachName || brand.coachName}`, 'success');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('ptcoach_session_active');
+    setIsLoggedIn(false);
+    setIsMobileMenuOpen(false);
+    triggerToast('Has cerrado sesión en PTcoach Demo', 'info');
+  };
+
   // Dedicated Full-Screen Login View when logged out
   if (!isLoggedIn) {
     return (
       <div className="login-root-wrapper">
         <LoginScreen
           brand={brand}
-          onLogin={(coachName) => {
-            setIsLoggedIn(true);
-            triggerToast(`Bienvenido de nuevo, ${coachName || brand.coachName}`, 'success');
-          }}
+          onLogin={handleLogin}
           isDarkTheme={isDarkTheme}
           onToggleTheme={() => setIsDarkTheme(!isDarkTheme)}
         />
@@ -245,7 +257,7 @@ export default function App() {
         brand={brand}
         clientCount={clients.length}
         onOpenWhiteLabel={() => setIsWhiteLabelModalOpen(true)}
-        onLogout={() => setIsLoggedIn(false)}
+        onLogout={handleLogout}
         isOpen={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
@@ -260,6 +272,7 @@ export default function App() {
           onOpenWhiteLabel={() => setIsWhiteLabelModalOpen(true)}
           isDarkTheme={isDarkTheme}
           onToggleTheme={() => setIsDarkTheme(!isDarkTheme)}
+          onLogout={handleLogout}
         />
 
         <main className="content-body">
