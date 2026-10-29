@@ -7,10 +7,14 @@ import type {
   ClientStatus,
   PaymentStatus,
   AnthropometricRecord,
+  DailyNutritionLog,
+  MealLog,
+  FoodItem,
+  MealType,
 } from '../types';
 import { INITIAL_FITCOACH_XML } from '../data/initialXmlData';
 
-const STORAGE_KEY = 'fitcoach_xml_database_v1';
+const STORAGE_KEY = 'fitcoach_xml_database_v2';
 
 export interface ParsedDatabase {
   brand: BrandConfig;
@@ -34,14 +38,14 @@ export function parseFitCoachXml(xmlString: string): ParsedDatabase {
   // 1. Parse Brand Config
   const brandEl = xmlDoc.getElementsByTagName('brand')[0];
   const brand: BrandConfig = {
-    brandName: brandEl?.getElementsByTagName('brand_name')[0]?.textContent || 'Apex Coach Studio',
+    brandName: brandEl?.getElementsByTagName('brand_name')[0]?.textContent || 'Fitia Coach Pro',
     coachName: brandEl?.getElementsByTagName('coach_name')[0]?.textContent || 'Coach Viviana Ocampo',
-    coachTitle: brandEl?.getElementsByTagName('coach_title')[0]?.textContent || 'Personal Trainer Certificado',
-    subdomain: brandEl?.getElementsByTagName('subdomain')[0]?.textContent || 'viviana.apexcoach.fit',
+    coachTitle: brandEl?.getElementsByTagName('coach_title')[0]?.textContent || 'Especialista en Nutrición & Hipertrofia',
+    subdomain: brandEl?.getElementsByTagName('subdomain')[0]?.textContent || 'viviana.fitiacoach.fit',
     primaryColor: brandEl?.getElementsByTagName('primary_color')[0]?.textContent || '#84cc16',
     accentColor: brandEl?.getElementsByTagName('accent_color')[0]?.textContent || '#22c55e',
     logoIcon: (brandEl?.getElementsByTagName('logo_icon')[0]?.textContent as any) || 'flame',
-    supportEmail: brandEl?.getElementsByTagName('support_email')[0]?.textContent || 'coach@apexcoach.fit',
+    supportEmail: brandEl?.getElementsByTagName('support_email')[0]?.textContent || 'coach@fitiacoach.fit',
     currency: brandEl?.getElementsByTagName('currency')[0]?.textContent || 'USD',
   };
 
@@ -123,6 +127,74 @@ export function parseFitCoachXml(xmlString: string): ParsedDatabase {
       });
     }
 
+    // 4. Parse Fitia Daily Plan (<daily_plan>)
+    const planEl = cNode.getElementsByTagName('daily_plan')[0];
+    const waterEl = planEl?.getElementsByTagName('water_intake')[0];
+    const waterGlasses = parseInt(waterEl?.getAttribute('glasses') || '6', 10);
+    const targetWaterGlasses = parseInt(waterEl?.getAttribute('target') || '12', 10);
+
+    const mealNodes = planEl ? planEl.getElementsByTagName('meal') : [];
+    const mealsList: MealLog[] = [];
+
+    const defaultMealTypes: { type: MealType; name: string; targetKcal: number }[] = [
+      { type: 'breakfast', name: 'Desayuno', targetKcal: Math.round(nutrition.dailyCalories * 0.25) },
+      { type: 'lunch', name: 'Almuerzo', targetKcal: Math.round(nutrition.dailyCalories * 0.35) },
+      { type: 'snack', name: 'Merienda', targetKcal: Math.round(nutrition.dailyCalories * 0.15) },
+      { type: 'dinner', name: 'Cena', targetKcal: Math.round(nutrition.dailyCalories * 0.25) },
+    ];
+
+    if (mealNodes.length > 0) {
+      for (let m = 0; m < mealNodes.length; m++) {
+        const mNode = mealNodes[m];
+        const mType = (mNode.getAttribute('type') as MealType) || 'breakfast';
+        const mName = mNode.getAttribute('name') || 'Comida';
+        const mTargetKcal = parseInt(mNode.getAttribute('target_kcal') || '500', 10);
+
+        const foodsList: FoodItem[] = [];
+        const foodNodes = mNode.getElementsByTagName('food');
+        for (let f = 0; f < foodNodes.length; f++) {
+          const fNode = foodNodes[f];
+          foodsList.push({
+            id: fNode.getAttribute('id') || `f-${f + 1}`,
+            name: fNode.getAttribute('name') || 'Alimento',
+            category: (fNode.getAttribute('category') as any) || 'protein',
+            grams: parseInt(fNode.getAttribute('grams') || '100', 10),
+            kcal: parseInt(fNode.getAttribute('kcal') || '150', 10),
+            protein: parseFloat(fNode.getAttribute('protein') || '10'),
+            carbs: parseFloat(fNode.getAttribute('carbs') || '15'),
+            fats: parseFloat(fNode.getAttribute('fats') || '5'),
+            checked: fNode.getAttribute('checked') === 'true',
+          });
+        }
+
+        mealsList.push({
+          id: `meal-${mType}-${id}`,
+          type: mType,
+          name: mName,
+          targetKcal: mTargetKcal,
+          foods: foodsList,
+        });
+      }
+    } else {
+      // Create empty default meals if none in XML
+      defaultMealTypes.forEach((def) => {
+        mealsList.push({
+          id: `meal-${def.type}-${id}`,
+          type: def.type,
+          name: def.name,
+          targetKcal: def.targetKcal,
+          foods: [],
+        });
+      });
+    }
+
+    const dailyLog: DailyNutritionLog = {
+      date: planEl?.getAttribute('date') || new Date().toISOString().split('T')[0],
+      waterGlasses,
+      targetWaterGlasses,
+      meals: mealsList,
+    };
+
     const assignedRoutine = routinesList.find((r) => r.id === routineId);
 
     clientsList.push({
@@ -141,6 +213,7 @@ export function parseFitCoachXml(xmlString: string): ParsedDatabase {
       assignedRoutineName: assignedRoutine ? assignedRoutine.title : 'Rutina Estándar',
       nutrition,
       records,
+      dailyLog,
     });
   }
 
@@ -219,6 +292,20 @@ export function serializeFitCoachToXml(
       xml += `        <record date="${rec.date}" weight="${rec.weightKg}" body_fat="${rec.bodyFatPercentage}" muscle="${rec.muscleMassKg}" />\n`;
     });
     xml += `      </records>\n`;
+
+    if (c.dailyLog) {
+      xml += `      <daily_plan date="${c.dailyLog.date}">\n`;
+      xml += `        <water_intake glasses="${c.dailyLog.waterGlasses}" target="${c.dailyLog.targetWaterGlasses}" />\n`;
+      c.dailyLog.meals.forEach((m) => {
+        xml += `        <meal type="${m.type}" name="${escapeXml(m.name)}" target_kcal="${m.targetKcal}">\n`;
+        m.foods.forEach((f) => {
+          xml += `          <food id="${f.id}" name="${escapeXml(f.name)}" category="${f.category}" grams="${f.grams}" kcal="${f.kcal}" protein="${f.protein}" carbs="${f.carbs}" fats="${f.fats}" checked="${f.checked}" />\n`;
+        });
+        xml += `        </meal>\n`;
+      });
+      xml += `      </daily_plan>\n`;
+    }
+
     xml += `    </client>\n`;
   });
   xml += `  </clients>\n`;
@@ -233,7 +320,7 @@ export function loadDatabaseFromStorage(): ParsedDatabase {
     try {
       return parseFitCoachXml(saved);
     } catch {
-      // fallback to initial
+      // fallback
     }
   }
   return parseFitCoachXml(INITIAL_FITCOACH_XML);

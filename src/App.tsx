@@ -1,5 +1,13 @@
 import { useState, useEffect, useTransition } from 'react';
-import type { BrandConfig, WorkoutRoutine, Client, ClientStatus, PaymentStatus } from './types';
+import type {
+  BrandConfig,
+  WorkoutRoutine,
+  Client,
+  ClientStatus,
+  PaymentStatus,
+  MealType,
+  FoodItem,
+} from './types';
 import {
   loadDatabaseFromStorage,
   saveDatabaseToStorage,
@@ -9,10 +17,13 @@ import {
 } from './services/xmlService';
 import { Sidebar, type TabType } from './components/Sidebar';
 import { Header } from './components/Header';
+import { FitiaDiaryView } from './components/FitiaDiaryView';
+import { GroceryListView } from './components/GroceryListView';
 import { DashboardView } from './components/DashboardView';
 import { ClientsView } from './components/ClientsView';
 import { WorkoutsView } from './components/WorkoutsView';
 import { XmlManagerView } from './components/XmlManagerView';
+import { BottomNavBar } from './components/BottomNavBar';
 import { WhiteLabelSettingsModal } from './components/WhiteLabelSettingsModal';
 import { LoginDemoModal } from './components/LoginDemoModal';
 import { ToastContainer, type ToastMessage } from './components/Toast';
@@ -26,7 +37,11 @@ export default function App() {
   const [clients, setClients] = useState<Client[]>(initialData.clients);
   const [currentXml, setCurrentXml] = useState<string>(initialData.rawXml);
 
-  const [currentTab, setCurrentTab] = useState<TabType>('dashboard');
+  const [activeClientId, setActiveClientId] = useState<string>(
+    initialData.clients[0]?.id || ''
+  );
+
+  const [currentTab, setCurrentTab] = useState<TabType>('fitia_diary');
   const [searchTerm, setSearchTerm] = useState('');
   const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,6 +52,8 @@ export default function App() {
 
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [, startTransition] = useTransition();
+
+  const activeClient = clients.find((c) => c.id === activeClientId) || clients[0];
 
   // Apply theme & brand primary color to document root
   useEffect(() => {
@@ -70,10 +87,98 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  // Fitia Daily Food Check Toggle
+  const handleToggleFoodCheck = (clientId: string, mealType: MealType, foodId: string) => {
+    const updated = clients.map((c) => {
+      if (c.id !== clientId) return c;
+      const updatedMeals = c.dailyLog.meals.map((m) => {
+        if (m.type !== mealType) return m;
+        return {
+          ...m,
+          foods: m.foods.map((f) => (f.id === foodId ? { ...f, checked: !f.checked } : f)),
+        };
+      });
+      return {
+        ...c,
+        dailyLog: {
+          ...c.dailyLog,
+          meals: updatedMeals,
+        },
+      };
+    });
+    setClients(updated);
+    syncToXmlAndStorage(brand, routines, updated);
+  };
+
+  // Fitia Delete Food from Meal
+  const handleDeleteFood = (clientId: string, mealType: MealType, foodId: string) => {
+    const updated = clients.map((c) => {
+      if (c.id !== clientId) return c;
+      const updatedMeals = c.dailyLog.meals.map((m) => {
+        if (m.type !== mealType) return m;
+        return {
+          ...m,
+          foods: m.foods.filter((f) => f.id !== foodId),
+        };
+      });
+      return {
+        ...c,
+        dailyLog: {
+          ...c.dailyLog,
+          meals: updatedMeals,
+        },
+      };
+    });
+    setClients(updated);
+    syncToXmlAndStorage(brand, routines, updated);
+    triggerToast('Alimento eliminado del plan diario', 'info');
+  };
+
+  // Fitia Add Food to Meal
+  const handleAddFoodToMeal = (clientId: string, mealType: MealType, newFood: FoodItem) => {
+    const updated = clients.map((c) => {
+      if (c.id !== clientId) return c;
+      const updatedMeals = c.dailyLog.meals.map((m) => {
+        if (m.type !== mealType) return m;
+        return {
+          ...m,
+          foods: [...m.foods, newFood],
+        };
+      });
+      return {
+        ...c,
+        dailyLog: {
+          ...c.dailyLog,
+          meals: updatedMeals,
+        },
+      };
+    });
+    setClients(updated);
+    syncToXmlAndStorage(brand, routines, updated);
+  };
+
+  // Fitia Water intake
+  const handleUpdateWaterGlasses = (clientId: string, delta: number) => {
+    const updated = clients.map((c) => {
+      if (c.id !== clientId) return c;
+      const newGlasses = Math.max(0, Math.min(30, c.dailyLog.waterGlasses + delta));
+      return {
+        ...c,
+        dailyLog: {
+          ...c.dailyLog,
+          waterGlasses: newGlasses,
+        },
+      };
+    });
+    setClients(updated);
+    syncToXmlAndStorage(brand, routines, updated);
+  };
+
   // Client handlers
   const handleAddClient = (newClient: Client) => {
     const updated = [newClient, ...clients];
     setClients(updated);
+    setActiveClientId(newClient.id);
     syncToXmlAndStorage(brand, routines, updated);
   };
 
@@ -92,6 +197,9 @@ export default function App() {
   const handleDeleteClient = (clientId: string) => {
     const updated = clients.filter((c) => c.id !== clientId);
     setClients(updated);
+    if (activeClientId === clientId && updated.length > 0) {
+      setActiveClientId(updated[0].id);
+    }
     syncToXmlAndStorage(brand, routines, updated);
   };
 
@@ -106,7 +214,7 @@ export default function App() {
   const handleSaveBrand = (newBrand: BrandConfig) => {
     setBrand(newBrand);
     syncToXmlAndStorage(newBrand, routines, clients);
-    triggerToast(`Identidad de marca actualizada: ${newBrand.brandName}`, 'success');
+    triggerToast(`Marca blanca actualizada: ${newBrand.brandName}`, 'success');
   };
 
   // Import raw XML
@@ -116,6 +224,9 @@ export default function App() {
       setBrand(parsed.brand);
       setRoutines(parsed.routines);
       setClients(parsed.clients);
+      if (parsed.clients.length > 0) {
+        setActiveClientId(parsed.clients[0].id);
+      }
       setCurrentXml(xmlString);
       saveDatabaseToStorage(xmlString);
     } catch (e: any) {
@@ -129,6 +240,9 @@ export default function App() {
     setBrand(fresh.brand);
     setRoutines(fresh.routines);
     setClients(fresh.clients);
+    if (fresh.clients.length > 0) {
+      setActiveClientId(fresh.clients[0].id);
+    }
     setCurrentXml(fresh.rawXml);
   };
 
@@ -173,6 +287,30 @@ export default function App() {
         />
 
         <main className="content-body">
+          {currentTab === 'fitia_diary' && activeClient && (
+            <FitiaDiaryView
+              clients={clients}
+              activeClient={activeClient}
+              onSelectClient={setActiveClientId}
+              brand={brand}
+              onToggleFoodCheck={handleToggleFoodCheck}
+              onDeleteFood={handleDeleteFood}
+              onAddFoodToMeal={handleAddFoodToMeal}
+              onUpdateWaterGlasses={handleUpdateWaterGlasses}
+              onTriggerToast={triggerToast}
+            />
+          )}
+
+          {currentTab === 'grocery_list' && activeClient && (
+            <GroceryListView
+              clients={clients}
+              activeClient={activeClient}
+              onSelectClient={setActiveClientId}
+              brand={brand}
+              onTriggerToast={triggerToast}
+            />
+          )}
+
           {currentTab === 'dashboard' && (
             <DashboardView
               clients={clients}
@@ -218,6 +356,17 @@ export default function App() {
             />
           )}
         </main>
+
+        {/* Mobile Native Bottom Navigation Bar */}
+        <BottomNavBar
+          currentTab={currentTab}
+          onSelectTab={(tab) => {
+            startTransition(() => {
+              setCurrentTab(tab);
+            });
+          }}
+          brandPrimaryColor={brand.primaryColor}
+        />
       </div>
 
       {/* White Label Customizer Modal */}

@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  UtensilsCrossed,
+  ShoppingCart,
   LayoutDashboard,
   Users,
   Dumbbell,
@@ -16,7 +18,13 @@ import {
 } from 'lucide-react';
 import type { BrandConfig } from '../types';
 
-export type TabType = 'dashboard' | 'clients' | 'workouts' | 'xml_manager';
+export type TabType =
+  | 'fitia_diary'
+  | 'grocery_list'
+  | 'dashboard'
+  | 'clients'
+  | 'workouts'
+  | 'xml_manager';
 
 interface SidebarProps {
   currentTab: TabType;
@@ -58,6 +66,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const navItems = [
+    {
+      id: 'fitia_diary' as TabType,
+      label: 'Diario Fitia & Macros',
+      icon: UtensilsCrossed,
+      badge: 'PRO',
+    },
+    {
+      id: 'grocery_list' as TabType,
+      label: 'Lista de Compras Súper',
+      icon: ShoppingCart,
+      badge: null,
+    },
     {
       id: 'dashboard' as TabType,
       label: 'Panel de Control',
@@ -114,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation list */}
         <nav className="sidebar-nav">
-          <div className="nav-group-title">Módulos del SaaS</div>
+          <div className="nav-group-title">Flujo de Trabajo Fitia</div>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.id;
@@ -144,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span
                     className="nav-badge"
                     style={
-                      item.badge === 'XML'
+                      item.badge === 'PRO' || item.badge === 'XML'
                         ? { backgroundColor: `${brand.primaryColor}25`, color: brand.primaryColor }
                         : {}
                     }

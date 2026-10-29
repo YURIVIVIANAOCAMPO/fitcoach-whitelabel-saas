@@ -2,6 +2,8 @@ export type FitnessGoal = 'hypertrophy' | 'fat_loss' | 'strength' | 'endurance' 
 export type ClientStatus = 'active' | 'paused' | 'injured';
 export type PaymentStatus = 'paid' | 'pending' | 'overdue';
 
+export type MealType = 'breakfast' | 'lunch' | 'snack' | 'dinner';
+
 export interface AnthropometricRecord {
   date: string;
   weightKg: number;
@@ -35,6 +37,42 @@ export interface NutritionPlan {
   waterLiters: number;
 }
 
+export interface FoodItem {
+  id: string;
+  name: string;
+  category: 'protein' | 'carb' | 'fat' | 'vegetable' | 'fruit' | 'dairy';
+  grams: number;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  checked: boolean;
+}
+
+export interface MealLog {
+  id: string;
+  type: MealType;
+  name: string;
+  targetKcal: number;
+  foods: FoodItem[];
+}
+
+export interface DailyNutritionLog {
+  date: string;
+  waterGlasses: number;
+  targetWaterGlasses: number;
+  meals: MealLog[];
+}
+
+export interface GroceryItem {
+  id: string;
+  name: string;
+  category: 'Carnes & Proteínas' | 'Cereales & Granos' | 'Frutas & Verduras' | 'Lácteos & Grasas';
+  totalGrams: number;
+  unit: string;
+  checked: boolean;
+}
+
 export interface Client {
   id: string;
   fullName: string;
@@ -51,6 +89,7 @@ export interface Client {
   assignedRoutineName: string;
   nutrition: NutritionPlan;
   records: AnthropometricRecord[];
+  dailyLog: DailyNutritionLog;
 }
 
 export interface BrandConfig {

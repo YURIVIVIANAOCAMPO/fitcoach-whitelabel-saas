@@ -104,6 +104,17 @@ export const ClientsView: React.FC<ClientsViewProps> = ({
           muscleMassKg: parseFloat(formMuscle) || 30,
         },
       ],
+      dailyLog: {
+        date: today,
+        waterGlasses: 0,
+        targetWaterGlasses: 12,
+        meals: [
+          { id: `meal-breakfast-${Date.now()}`, type: 'breakfast', name: 'Desayuno', targetKcal: 500, foods: [] },
+          { id: `meal-lunch-${Date.now()}`, type: 'lunch', name: 'Almuerzo', targetKcal: 750, foods: [] },
+          { id: `meal-snack-${Date.now()}`, type: 'snack', name: 'Merienda', targetKcal: 350, foods: [] },
+          { id: `meal-dinner-${Date.now()}`, type: 'dinner', name: 'Cena', targetKcal: 600, foods: [] },
+        ],
+      },
     };
 
     onAddClient(newClient);
