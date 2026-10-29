@@ -22,7 +22,7 @@ import { ClientsView } from './components/ClientsView';
 import { WorkoutsView } from './components/WorkoutsView';
 import { BottomNavBar } from './components/BottomNavBar';
 import { WhiteLabelSettingsModal } from './components/WhiteLabelSettingsModal';
-import { LoginDemoModal } from './components/LoginDemoModal';
+import { LoginScreen } from './components/LoginScreen';
 import { ToastContainer, type ToastMessage } from './components/Toast';
 import './App.css';
 
@@ -214,6 +214,24 @@ export default function App() {
     triggerToast(`Marca blanca actualizada: ${newBrand.brandName}`, 'success');
   };
 
+  // Dedicated Full-Screen Login View when logged out
+  if (!isLoggedIn) {
+    return (
+      <div className="login-root-wrapper">
+        <LoginScreen
+          brand={brand}
+          onLogin={(coachName) => {
+            setIsLoggedIn(true);
+            triggerToast(`Bienvenido de nuevo, ${coachName || brand.coachName}`, 'success');
+          }}
+          isDarkTheme={isDarkTheme}
+          onToggleTheme={() => setIsDarkTheme(!isDarkTheme)}
+        />
+        <ToastContainer toasts={toasts} onDismiss={handleDismissToast} />
+      </div>
+    );
+  }
+
   return (
     <div className="app-layout">
       {/* Sidebar with White-label Brand Customization */}
@@ -321,16 +339,6 @@ export default function App() {
         onClose={() => setIsWhiteLabelModalOpen(false)}
         brand={brand}
         onSaveBrand={handleSaveBrand}
-      />
-
-      {/* Demo Login Modal (when logged out) */}
-      <LoginDemoModal
-        isOpen={!isLoggedIn}
-        onLogin={() => {
-          setIsLoggedIn(true);
-          triggerToast(`Bienvenido de nuevo, ${brand.coachName}`, 'success');
-        }}
-        brand={brand}
       />
 
       {/* Toast Notification Container */}
